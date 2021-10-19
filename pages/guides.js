@@ -3,7 +3,7 @@ import AuthContext from '../stores/authContext';
 import styles from '../styles/Guides.module.css';
 
 export default function Guides() {
-  const { user, authReady } = useContext(AuthContext);
+  const { user, authReady, login } = useContext(AuthContext);
   const [guides, setGuides] = useState(null);
   const [error, setError] = useState(null);
 
@@ -13,19 +13,20 @@ export default function Guides() {
         '/.netlify/functions/guides',
         user && {
           headers: {
-            Authorization: `Bearer ${user.token.access_token}`,
+            Authorization: 'Bearer ' + user.token.access_token,
           },
         },
       )
         .then((res) => {
           if (!res.ok) {
-            throw Error('You must be logged in!');
+            login();
+            throw Error('You must be logged in to view this content');
           }
           return res.json();
         })
         .then((data) => {
-          setGuides(data);
           setError(null);
+          setGuides(data);
         })
         .catch((err) => {
           setError(err.message);
@@ -45,17 +46,17 @@ export default function Guides() {
       )}
 
       {guides &&
-        guides.map((guide) => {
+        guides.map((guide) => (
           <div key={guide.title} className={styles.card}>
             <h3>{guide.title}</h3>
-            <h4>Written by {guide.author}</h4>
+            <h4>written by {guide.author}</h4>
             <p>
-              Culpa irure dolor laboris elit ut voluptate sunt ex Lorem sit aliqua. Sit sint cillum ut in ut magna enim
-              Lorem laboris officia nulla dolor ullamco laboris. Laboris irure est aute officia aliqua ea fugiat dolor
-              ea labore consectetur.
+              Lorem ipsum dolor sit amet consectetur, adipisicing elit. At corrupti iste ab magnam dignissimos id maxime
+              rerum quae minima. Delectus maxime culpa est consequatur veritatis, perspiciatis cum corrupti possimus
+              quis?
             </p>
-          </div>;
-        })}
+          </div>
+        ))}
     </div>
   );
 }
