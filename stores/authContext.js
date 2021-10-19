@@ -16,11 +16,27 @@ export const AuthContextProvider = ({ children }) => {
     netlifyIdentity.open();
   };
 
-  const logout = () => {};
+  const logout = () => {
+    netlifyIdentity.logout();
+  };
 
   useEffect(() => {
+    netlifyIdentity.on('login', (user) => {
+      setUser(user);
+      netlifyIdentity.close();
+    });
+
+    netlifyIdentity.on('logout', (user) => {
+      setUser(null);
+    });
+
     // INIT netlify identity connection
     netlifyIdentity.init();
+
+    return () => {
+      netlifyIdentity.off('login');
+      netlifyIdentity.off('logout');
+    };
   }, []);
 
   const context = { user, login, logout };
